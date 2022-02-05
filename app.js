@@ -1,15 +1,20 @@
 const express = require("express");
 const projectRouter = require("./modules/project");
 const taskRouter = require("./modules/task");
-const { connectDb, middlewares } = require("./config");
+const authRouter = require("./modules/auth");
+const { connectDb, middlewares, sessionConfig } = require("./config");
 
 async function start() {
   try {
     const { PORT } = process.env;
     const app = express();
-
+    // db
     await connectDb();
+    // middlewares
     middlewares(app);
+    sessionConfig(app);
+    // routes
+    authRouter(app);
     projectRouter(app);
     taskRouter(app);
 
