@@ -7,7 +7,10 @@ function isObjectId(id) {
 
 async function getProjects(req, res) {
   try {
-    const projects = await Project.find().populate("tasks").lean();
+    const userId = req.session?.user?._id;
+    const projects = await Project.find({ owner: userId })
+      .populate("tasks")
+      .lean();
     res.status(200).json(projects).end();
   } catch (err) {
     res.status(400).json(err.message).end();
@@ -29,7 +32,8 @@ async function getProjectById(req, res) {
 
 async function createProject(req, res) {
   try {
-    const project = await Project.create(req.body);
+    const userId = req.session?.user?._id;
+    const project = await Project.create({ ...req.body, owner: userId });
     res.status(200).json(project).end();
   } catch (err) {
     res.status(400).json(err.message).end();
